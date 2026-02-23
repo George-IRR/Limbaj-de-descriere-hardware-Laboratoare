@@ -14,3 +14,4 @@ modelsim.ini
 # Fișiere de log și backup
 *.log
 *.bak
+*.vstf

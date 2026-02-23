@@ -2,8 +2,8 @@
 
 module test_bench;
 
-localparam LED			= 3; 
-localparam BITS       	= 2;        
+localparam LED			= 2; 
+localparam BITS       	= 28;        
 localparam CLK_PER_NS 	= 5;        
 
 reg clk, rst_n;                   
@@ -30,9 +30,15 @@ end
 // Secventa de test
 initial begin
     // Secvența de reset
-    rst_n = 0;              // reset activ
+    rst_n = 1;              // reset activ
     #(CLK_PER_NS * 2);      // asteptam 2 perioade de ceas (10 ns)
-    rst_n = 1;              // reset dezactivat
+    rst_n = 0;              // reset dezactivat
+	
+	#(CLK_PER_NS * 2);
+	
+	rst_n = 1;        
+	#(CLK_PER_NS * 2);        
+	
 	
 	#(CLK_PER_NS * 100);
 	
