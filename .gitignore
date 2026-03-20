@@ -15,3 +15,43 @@ modelsim.ini
 *.log
 *.bak
 *.vstf
+*.rpt
+*.done
+*.cdf
+
+# Baze de date Quartus si fisiere temporare
+db/
+incremental_db/
+greybox_tmp/
+hc_output/
+qdb/
+.qsys_edit/
+
+# Directoare de output si simulare
+output_files/
+simulation/
+timing/
+
+# Jurnale, rapoarte si metadate locale
+*.rpt
+*.smsg
+*.summary
+*.done
+*.jdi
+*.pin
+*.qws
+*.qdf
+*.bak
+*.qarlog
+
+# Fisiere generate Platform Designer / Qsys
+*.sopcinfo
+*_generation.rpt
+
+# Simulatoare externe (ModelSim / Questa)
+transcript
+vsim.wlf
+modelsim.ini
+*.qpf
+*.qsf
+*.json
