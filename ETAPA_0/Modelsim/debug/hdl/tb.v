@@ -14,7 +14,7 @@ wire [BITS-1:0] 	cnt;
 wire [LED-1:0] 		led;
 
 // Instantierea modulului
-counter #(
+seq_counter #(
     .CLK_FREQ       (CLK_FREQ),
     .UPDATE_HZ      (UPDATE_HZ),                      
     .WIDTH        	(BITS	),
