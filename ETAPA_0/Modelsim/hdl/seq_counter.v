@@ -1,5 +1,5 @@
 module seq_counter #(
-    parameter CLK_FREQ      = 50000000, 
+    parameter CLK_FREQ      = 50_000_000, 
     parameter UPDATE_HZ     = 2,        
     parameter LED_WIDTH     = 10,
     parameter WIDTH         = 28,
