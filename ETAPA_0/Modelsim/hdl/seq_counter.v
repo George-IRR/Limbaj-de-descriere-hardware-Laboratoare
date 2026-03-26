@@ -19,28 +19,24 @@ reg  [WIDTH-1:0]       cnt_o;
 wire [LED_WIDTH-1:0]   LED_Lenght;
 
 always @(posedge clk_i or negedge rst_ni)
-    if (!rst_ni)                   cnt_o <= 0; else
-    if (cnt_o == CNT_STOP - 1)     cnt_o <= 0; else
-                                   cnt_o <= cnt_o + 1;
+    if (!rst_ni)                    cnt_o   <= 0; else
+    if (cnt_o == CNT_STOP - 1)      cnt_o   <= 0; else
+                                    cnt_o   <= cnt_o + 1;
 
 always @(posedge clk_i or negedge rst_ni)
-    if (!rst_ni)                    row_o  <= 0;
+    if (!rst_ni)                    row_o   <= 0;
     else if (column_o == 3'b111)    row_o   <= 1;
     else if (!column_o)             row_o   <= 0;
   
 
-always @(posedge clk_i or negedge rst_ni) begin
-    if (!rst_ni) begin
-        column_o        <= 0;
-    end
-    
+always @(posedge clk_i or negedge rst_ni)
+    if (!rst_ni)                    column_o <= 0;
     else if (!row_o) begin
-        if      (!cnt_o)                                 column_o <= column_o + 1;
+        if (!cnt_o)                 column_o <= column_o + 1;
     end
-    
     else if (row_o) begin
-        if (!cnt_o)     column_o <= column_o - 1;
+        if (!cnt_o)                 column_o <= column_o - 1;
     end
-end
+
 
 endmodule

@@ -23,7 +23,6 @@ wire [7:0]          HEX4;
 wire [7:0]          HEX5;
 
 
-// Instantierea modulului
 seq_counter #(
     .CLK_FREQ       (CLK_FREQ),
     .UPDATE_HZ      (UPDATE_HZ),                      
@@ -50,18 +49,17 @@ display #(
     .HEX5       (HEX5)
 
 );
-// Generarea semnalului de ceas
+
 initial begin
     clk = 0;
-    forever #(CLK_PER_NS/2.0) clk = ~clk;    // .0 pentru a forta sa fie nr real
+    forever #(CLK_PER_NS/2.0) clk = ~clk;    // Using .0 to force real-number (floating-point) division
 end
 
-// Secventa de test
+// test seq
 initial begin
-    // reset
-    rst_n = 1;              // reset activ
-    #(CLK_PER_NS * 10);      // asteptam cateva perioade de ceas 
-    rst_n = 0;              // reset dezactivat
+    rst_n = 1;              
+    #(CLK_PER_NS * 10);     
+    rst_n = 0;              
 	
 	#(CLK_PER_NS * 6);
 	
