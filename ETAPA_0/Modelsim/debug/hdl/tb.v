@@ -15,6 +15,14 @@ wire [BITS-1:0] 	cnt;
 wire [2:0]          column;
 wire                row;
 
+wire [7:0]          HEX0;
+wire [7:0]          HEX1;
+wire [7:0]          HEX2;
+wire [7:0]          HEX3;
+wire [7:0]          HEX4;
+wire [7:0]          HEX5;
+
+
 // Instantierea modulului
 seq_counter #(
     .CLK_FREQ       (CLK_FREQ),
@@ -28,6 +36,20 @@ seq_counter #(
     .row_o          (row)
 );
 
+display #(
+) display_dut(
+    .clk_i      (clk),
+    .rst_ni     (rst_n),
+    .column_i   (column),
+    .row_i      (row),
+    .HEX0       (HEX0),
+    .HEX1       (HEX1),
+    .HEX2       (HEX2),
+    .HEX3       (HEX3),
+    .HEX4       (HEX4),
+    .HEX5       (HEX5)
+
+);
 // Generarea semnalului de ceas
 initial begin
     clk = 0;
@@ -36,7 +58,7 @@ end
 
 // Secventa de test
 initial begin
-    // Secvența de reset
+    // reset
     rst_n = 1;              // reset activ
     #(CLK_PER_NS * 10);      // asteptam cateva perioade de ceas 
     rst_n = 0;              // reset dezactivat
