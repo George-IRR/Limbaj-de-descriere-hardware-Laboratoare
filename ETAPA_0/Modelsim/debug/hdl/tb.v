@@ -11,7 +11,9 @@ localparam UPDATE_HZ    = 2;
 
 reg clk, rst_n;                   
 wire [BITS-1:0] 	cnt;
-wire [LED-1:0] 		led;
+
+wire [2:0]          column;
+wire                row;
 
 // Instantierea modulului
 seq_counter #(
@@ -22,7 +24,8 @@ seq_counter #(
 ) dut (                           
     .clk_i        	(clk  	),
     .rst_ni       	(rst_n	),
-	.led_o			(led	)
+    .column_o       (column),
+    .row_o          (row)
 );
 
 // Generarea semnalului de ceas
@@ -35,7 +38,7 @@ end
 initial begin
     // Secvența de reset
     rst_n = 1;              // reset activ
-    #(CLK_PER_NS * 6);      // asteptam 2 perioade de ceas (10 ns)
+    #(CLK_PER_NS * 10);      // asteptam cateva perioade de ceas 
     rst_n = 0;              // reset dezactivat
 	
 	#(CLK_PER_NS * 6);
@@ -44,7 +47,7 @@ initial begin
 	#(CLK_PER_NS * 2);        
 	
 	
-	#(CLK_PER_NS * 1000);
+	#(CLK_PER_NS * 300);
 	
 	$stop;
 end
