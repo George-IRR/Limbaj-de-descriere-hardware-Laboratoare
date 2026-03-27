@@ -1,5 +1,4 @@
-module display #(
-)(
+module display (
     input               clk_i,
     input               rst_ni,
     input [2:0]         column_i ,
@@ -13,8 +12,8 @@ module display #(
 
 );
 
-localparam upper_mask = 8'b0110_0011;
-localparam lower_mask = 8'b0101_1100;
+localparam upper_mask = 8'b1001_1100;
+localparam lower_mask = 8'b1010_0011;
 
 always @(posedge clk_i or negedge rst_ni) begin
     if (!rst_ni) begin
@@ -25,6 +24,7 @@ always @(posedge clk_i or negedge rst_ni) begin
         HEX4 <= 8'hFF;
         HEX5 <= 8'hFF;
     end else begin
+	 
         // Turn off all displays mask (common anode)
         HEX0 <= 8'hFF;
         HEX1 <= 8'hFF;
