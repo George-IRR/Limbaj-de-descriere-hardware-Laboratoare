@@ -1,7 +1,6 @@
 module seq_counter #(
-    parameter CLK_FREQ      = 50_000_000, 
+    parameter CLK_FREQ      = 50_000_000,
     parameter UPDATE_HZ     = 2,        
-    parameter WIDTH         = 28,
     parameter DISP_WIDTH    = 10
 )(
     input    				clk_i,
@@ -12,6 +11,7 @@ module seq_counter #(
 );
 
 localparam CNT_STOP = CLK_FREQ / UPDATE_HZ;
+localparam WIDTH = $clog2(CLK_FREQ);
 
 reg [WIDTH-1:0] cnt_o;
 wire            tick_w = (cnt_o == CNT_STOP - 1);
