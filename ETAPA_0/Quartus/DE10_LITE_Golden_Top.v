@@ -127,8 +127,7 @@ wire                row;
 
 seq_counter #(
     .CLK_FREQ       (50000000),
-    .UPDATE_HZ      (2),                      
-    .WIDTH          (28)
+    .UPDATE_HZ      (2)
 ) sequence_counter (
     .clk_i          (MAX10_CLK1_50),  
     .rst_ni         (KEY[0]),         
