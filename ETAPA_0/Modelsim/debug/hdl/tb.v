@@ -11,10 +11,19 @@ localparam UPDATE_HZ    = 2;
 
 reg clk, rst_n;                   
 wire [BITS-1:0] 	cnt;
-wire [LED-1:0] 		led;
 
-// Instantierea modulului
-counter #(
+wire [2:0]          column;
+wire                row;
+
+wire [7:0]          HEX0;
+wire [7:0]          HEX1;
+wire [7:0]          HEX2;
+wire [7:0]          HEX3;
+wire [7:0]          HEX4;
+wire [7:0]          HEX5;
+
+
+seq_counter #(
     .CLK_FREQ       (CLK_FREQ),
     .UPDATE_HZ      (UPDATE_HZ),                      
     .WIDTH        	(BITS	),
@@ -22,21 +31,35 @@ counter #(
 ) dut (                           
     .clk_i        	(clk  	),
     .rst_ni       	(rst_n	),
-	.led_o			(led	)
+    .column_o       (column),
+    .row_o          (row)
 );
 
-// Generarea semnalului de ceas
+display #(
+) display_dut(
+    .clk_i      (clk),
+    .rst_ni     (rst_n),
+    .column_i   (column),
+    .row_i      (row),
+    .HEX0       (HEX0),
+    .HEX1       (HEX1),
+    .HEX2       (HEX2),
+    .HEX3       (HEX3),
+    .HEX4       (HEX4),
+    .HEX5       (HEX5)
+
+);
+
 initial begin
     clk = 0;
-    forever #(CLK_PER_NS/2.0) clk = ~clk;    // .0 pentru a forta sa fie nr real
+    forever #(CLK_PER_NS/2.0) clk = ~clk;    // Using .0 to force real-number (floating-point) division
 end
 
-// Secventa de test
+// test seq
 initial begin
-    // Secvența de reset
-    rst_n = 1;              // reset activ
-    #(CLK_PER_NS * 6);      // asteptam 2 perioade de ceas (10 ns)
-    rst_n = 0;              // reset dezactivat
+    rst_n = 1;              
+    #(CLK_PER_NS * 10);     
+    rst_n = 0;              
 	
 	#(CLK_PER_NS * 6);
 	
@@ -44,7 +67,7 @@ initial begin
 	#(CLK_PER_NS * 2);        
 	
 	
-	#(CLK_PER_NS * 1000);
+	#(CLK_PER_NS * 300);
 	
 	$stop;
 end
