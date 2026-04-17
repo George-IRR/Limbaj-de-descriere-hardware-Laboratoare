@@ -154,17 +154,17 @@ pll	pll_inst (
 	);
 
 spi_phy spi_phy_inst(
-    .rst_ni    	( rst_n	 ),
-    .clk_i     	( sys_clk ),  // max 5MHz for ADXL345 sensor
-    .spi_clk_i 	( spi_clk ),  // same frequency as clk_i, 220 deg phase offset
+    .rst_ni    	( rst_n	 	),
+    .clk_i     	( sys_clk 	),  // max 5MHz for ADXL345 sensor
+    .spi_clk_i 	( spi_clk 	),  // same frequency as clk_i, 220 deg phase offset
 
     // Parallel request-acknowledge interface (sampled with clk_i)
-    .req_i     	( ~KEY[1] ),
-    .rw_ni     	( 1 ),  // 1=read, 0=write
-    .addr_i    	( 'h00 ),
-    .wr_data_i 	( 0 ),
-    .ack_o     	( ack),
-    .rd_data_o 	( rd_data ),
+    .req_i     	( ~KEY[1] 	),
+    .rw_ni     	( 1 			),  // 1=read, 0=write
+    .addr_i    	( SW[5:0] 	),
+    .wr_data_i 	( 0 			),
+    .ack_o     	( ack			),
+    .rd_data_o 	( rd_data 	),
 
     // SPI interface
     .spi_cs_no 	( GSENSOR_CS_N	),
