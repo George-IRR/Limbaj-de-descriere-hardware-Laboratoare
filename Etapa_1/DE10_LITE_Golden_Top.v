@@ -133,9 +133,13 @@ wire [7:0] rd_data;
 wire ack;
 
 assign rst_n 	= KEY[0];
-assign pll_rst = //~rst_n;
+assign pll_rst = ~rst_n;
 assign LEDR = {pll_locked, ack, rd_data};
 
+wire spi_oe_o;
+
+wire sdo;
+assign GSENSOR_SDI = spi_oe_o ? sdo : 1'bZ;
 
 //=======================================================
 //  Structural coding
@@ -152,24 +156,22 @@ pll	pll_inst (
 spi_phy spi_phy_inst(
     .rst_ni    	( rst_n	 ),
     .clk_i     	( sys_clk ),  // max 5MHz for ADXL345 sensor
-    .spi_clk_i 	( spi_clk )
-	 ),  // same frequency as clk_i, 220 deg phase offset
+    .spi_clk_i 	( spi_clk ),  // same frequency as clk_i, 220 deg phase offset
 
     // Parallel request-acknowledge interface (sampled with clk_i)
-    .req_i     	( 1 ),
+    .req_i     	( ~KEY[1] ),
     .rw_ni     	( 1 ),  // 1=read, 0=write
-    .addr_i    	( 0 ),
+    .addr_i    	( 'h00 ),
     .wr_data_i 	( 0 ),
     .ack_o     	( ack),
     .rd_data_o 	( rd_data ),
 
     // SPI interface
-    .spi_cs_no 	(),
-    .spi_clk_o 	(),
-    .spi_data_o	(),
-    .spi_data_i	(),
-    .spi_oe_o  	()   // control 3-state buffer for 3-wire SPI mode 
+    .spi_cs_no 	( GSENSOR_CS_N	),
+    .spi_clk_o 	( GSENSOR_SCLK	),
+    .spi_data_o	( sdo				),
+    .spi_data_i	( GSENSOR_SDI	),
+    .spi_oe_o  	( spi_oe_o 		)    // control 3-state buffer for 3-wire SPI mode 
 );
-
 
 endmodule
