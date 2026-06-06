@@ -134,7 +134,12 @@ end
 //=======================================================
 //  Structural coding
 //=======================================================
-assign LEDR[9:0] = SW[0] ? x_axis[9:0] : y_axis[9:0];
+wire [15:0] comp2_x;
+assign comp2_x = ~x_axis + 1;
+
+assign LEDR[9:0] = comp2_x[15] ? 'hFFF : 'h000;
+
+//assign LEDR[9:0] = SW[0] ? x_axis[9:0] : y_axis[9:0];
 
 
 wire [2:0] column;
