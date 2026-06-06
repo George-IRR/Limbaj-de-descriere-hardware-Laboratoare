@@ -244,12 +244,6 @@ set_global_assignment -name EDA_GENERATE_FUNCTIONAL_NETLIST OFF -section_id eda_
 set_global_assignment -name EDA_GENERATE_FUNCTIONAL_NETLIST OFF -section_id eda_board_design_symbol
 set_global_assignment -name EDA_GENERATE_FUNCTIONAL_NETLIST OFF -section_id eda_board_design_signal_integrity
 set_global_assignment -name EDA_GENERATE_FUNCTIONAL_NETLIST OFF -section_id eda_board_design_boundary_scan
-set_global_assignment -name SYSTEMVERILOG_FILE adxl345.sv
-set_global_assignment -name VERILOG_FILE display.v
-set_global_assignment -name VERILOG_FILE seq_counter.v
-set_global_assignment -name QIP_FILE pll.qip
-set_global_assignment -name SYSTEMVERILOG_FILE spi_phy.sv
-set_global_assignment -name VERILOG_FILE DE10_LITE_Golden_Top.v
 set_global_assignment -name VERILOG_INPUT_VERSION SYSTEMVERILOG_2005
 set_global_assignment -name VERILOG_SHOW_LMF_MAPPING_MESSAGES OFF
 set_global_assignment -name PARTITION_NETLIST_TYPE SOURCE -section_id Top
@@ -440,4 +434,11 @@ set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to GPIO[32]
 set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to GPIO[33]
 set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to GPIO[34]
 set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to GPIO[35]
+set_global_assignment -name VERILOG_FILE adxl_level.v
+set_global_assignment -name SYSTEMVERILOG_FILE adxl345.sv
+set_global_assignment -name VERILOG_FILE display.v
+set_global_assignment -name VERILOG_FILE seq_counter.v
+set_global_assignment -name QIP_FILE pll.qip
+set_global_assignment -name SYSTEMVERILOG_FILE spi_phy.sv
+set_global_assignment -name VERILOG_FILE DE10_LITE_Golden_Top.v
 set_instance_assignment -name PARTITION_HIERARCHY root_partition -to | -section_id Top
