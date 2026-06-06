@@ -118,17 +118,25 @@ always @(posedge sys_clk) begin
 end
 assign front_detector = ~KEY[1] & signal_delay;
 
-reg [15:0] data;
+reg [15:0] x_axis;
+reg [15:0] y_axis;
 always @(posedge sys_clk or negedge rst_n) begin
-    if (~rst_n) data <= 0; 
-    else if (ack) data[15:0] <= x_data[15:0];
+    if (~rst_n) begin
+	 x_axis <= 0; 
+    y_axis <= 0;
+	 end
+	 else if (ack) begin
+		x_axis[15:0] <= x_data[15:0];
+		y_axis[15:0] <= y_data[15:0];
+		end
 end
 
 //=======================================================
 //  Structural coding
 //=======================================================
-//assign LEDR[9:0] = data[9:0];
-assign LEDR[7:0] = SW[0] ? data[7:0] : data[15:8];
+assign LEDR[9:0] = SW[0] ? x_axis[9:0] : y_axis[9:0];
+
+
 wire [2:0] column;
 wire       row;
 
@@ -156,45 +164,50 @@ wire       row;
 //);
 
 pll pll_inst (
-    .areset     ( pll_rst     		),
-    .inclk0     ( MAX10_CLK1_50     ),
-    .c0         ( sys_clk           ),
-    .c1         ( spi_clk           ),
-    .locked     ( pll_locked        )
+    .areset     ( pll_rst       ),
+    .inclk0     ( MAX10_CLK1_50 ),
+    .c0         ( sys_clk       ),
+    .c1         ( spi_clk       ),
+    .locked     ( pll_locked    )
 );
 
 
-wire rw_n, req;
-wire [7:0] wr_data;
-wire [5:0] addr;
+wire rw_n;
+wire req;
+
+wire [ 7:0] wr_data;
+wire [ 5:0] addr;
 wire [15:0] x_data;
+wire [15:0] y_data;
+
 adxl345 u_control(
-    .clk				( sys_clk 	),
-    .rst_n			( rst_n	 	),
-	 .rd_data_i		( rd_data 	),
-	 .req_o			( req 		),
-	 .rw_no			( rw_n 		),
-	 .addr_i			( addr 		),
-	 .wr_data_o		( wr_data 	),
-	 .ack_i			( ack		 	),
-	 .x_data_o		( x_data	 	)
+    .clk			( sys_clk ),
+    .rst_n		( rst_n	 ),
+	 .rd_data_i	( rd_data ),
+	 .req_o		( req 	 ),
+	 .rw_no		( rw_n 	 ),
+	 .addr_i		( addr 	 ),
+	 .wr_data_o	( wr_data ),
+	 .ack_i		( ack		 ),
+	 .x_data_o	( x_data	 ),
+	 .y_data_o	( y_data	 )
 );
 
 spi_phy spi_phy_inst(
-    .rst_ni        ( rst_n         	),
-    .clk_i         ( sys_clk     	),  
-    .spi_clk_i     ( spi_clk     	),  
-    .req_i         ( req 				),
-    .rw_ni         ( rw_n           ),  
-    .addr_i        ( addr		     	),
-    .wr_data_i     ( wr_data        ),
-    .ack_o         ( ack            ),
-    .rd_data_o     ( rd_data     	),
-    .spi_cs_no     ( GSENSOR_CS_N   ),
-    .spi_clk_o     ( GSENSOR_SCLK   ),
-    .spi_data_o    ( sdo            ),
-    .spi_data_i    ( GSENSOR_SDI    ),
-    .spi_oe_o      ( spi_oe_o       )   
+    .rst_ni     ( rst_n        ),
+    .clk_i      ( sys_clk      ), 
+    .spi_clk_i  ( spi_clk      ),
+    .req_i      ( req 			 ),
+    .rw_ni      ( rw_n         ),  
+    .addr_i     ( addr		    ),
+    .wr_data_i  ( wr_data      ),
+    .ack_o      ( ack          ),
+    .rd_data_o  ( rd_data      ),
+    .spi_cs_no  ( GSENSOR_CS_N ),
+    .spi_clk_o  ( GSENSOR_SCLK ),
+    .spi_data_o ( sdo          ),
+    .spi_data_i ( GSENSOR_SDI  ),
+    .spi_oe_o   ( spi_oe_o     )   
 );
 
 endmodule

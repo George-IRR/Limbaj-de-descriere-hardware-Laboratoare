@@ -9,7 +9,8 @@ module adxl345 (
 	 output logic [7:0]	wr_data_o,
 	 input  logic 			ack_i,
 	 
-	 output logic [15:0] x_data_o
+	 output logic [15:0] x_data_o,
+	 output logic [15:0] y_data_o
 );
 
 
@@ -22,7 +23,7 @@ typedef struct packed {
 
 localparam int NUM_INSTR = 6;
 localparam instr_t INITIALIZATION_PROG [NUM_INSTR] = '{
-    '{OPCODE: 1'b0, MB: 1'b0, ADDRESS: 6'h31, DATA: 8'b4B}, // DATA_FORMAT
+    '{OPCODE: 1'b0, MB: 1'b0, ADDRESS: 6'h31, DATA: 8'b0100_1011}, // DATA_FORMAT
     '{OPCODE: 1'b0, MB: 1'b0, ADDRESS: 6'h2D, DATA: 8'h08}, // POWER_CTL
 	 
 	 '{OPCODE: 1'b1, MB: 1'b0, ADDRESS: 6'h32, DATA: 8'h00}, // PC = 2: DATAX0
@@ -83,4 +84,5 @@ end
 
 assign x_data_o = {data_x1, data_x0};
 assign y_data_o = {data_y1, data_y0};
+
 endmodule
