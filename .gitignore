@@ -19,40 +19,47 @@ modelsim.ini
 *.done
 *.cdf
 
-# Baze de date Quartus si fisiere temporare
-db/
-incremental_db/
-greybox_tmp/
-hc_output/
-qdb/
-.qsys_edit/
-
-# Directoare de output si simulare
-output_files/
-simulation/
-timing/
-
-# Jurnale, rapoarte si metadate locale
+*_generation_script*
+*_inst.vhd
+*.bak
+*.cmp
+*.done
+*.eqn
+*.hex
+*.html
+*.jdi
+*.jpg
+# *.mif
+*.pin
+*.pof
+*.ptf.*
+*.qar
+*.qarlog
+*.qws
 *.rpt
 *.smsg
+*.sof
+*.sopc_builder
 *.summary
-*.done
-*.jdi
-*.pin
-*.qws
-*.qdf
-*.bak
-*.qarlog
+*.tcl
+*.txt # Explicitly add any text files used
+*~
+*example*
+*sopc_*
+# *.sdc # I want those timing files
 
-# Fisiere generate Platform Designer / Qsys
-*.sopcinfo
-*_generation.rpt
+# ignore Quartus II generated folders
+*/db/
+*/incremental_db/
+*/simulation/
+*/timing/
+*/testbench/
+*/*_sim/
+incremental_db/
+db/
+_output_files/
+PLLJ_PLLSPE_INFO.txt
 
-# Simulatoare externe (ModelSim / Questa)
-transcript
-vsim.wlf
-modelsim.ini
-*.qpf
-*.qsf
-*.json
 Docs/.$Diagrame.drawio.bkp
+*/output_files/
+*/greybox_tmp/
