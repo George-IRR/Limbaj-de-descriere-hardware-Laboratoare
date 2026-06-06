@@ -22,7 +22,7 @@ typedef struct packed {
 
 localparam int NUM_INSTR = 6;
 localparam instr_t INITIALIZATION_PROG [NUM_INSTR] = '{
-    '{OPCODE: 1'b0, MB: 1'b0, ADDRESS: 6'h31, DATA: 8'b0100_0000}, // DATA_FORMAT
+    '{OPCODE: 1'b0, MB: 1'b0, ADDRESS: 6'h31, DATA: 8'b4B}, // DATA_FORMAT
     '{OPCODE: 1'b0, MB: 1'b0, ADDRESS: 6'h2D, DATA: 8'h08}, // POWER_CTL
 	 
 	 '{OPCODE: 1'b1, MB: 1'b0, ADDRESS: 6'h32, DATA: 8'h00}, // PC = 2: DATAX0
@@ -33,8 +33,7 @@ localparam instr_t INITIALIZATION_PROG [NUM_INSTR] = '{
 
 instr_t current_instr;
 
-//assign req_o		= PC < NUM_INSTR			;
-assign req_o		= 1;
+assign req_o		= PC < NUM_INSTR;
 
 assign rw_no		= current_instr.OPCODE	;
 assign addr_i		= current_instr.ADDRESS	;

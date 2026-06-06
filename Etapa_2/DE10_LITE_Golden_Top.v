@@ -106,9 +106,6 @@ wire pll_locked;
 assign rst_n   = KEY[0];
 assign pll_rst = ~rst_n;
 
-// Mapăm starea curentă pe LEDR[9:8] ca să vezi cum se schimbă la apăsarea KEY[1]
-//assign LEDR = {ack, data};
-
 wire spi_oe_o;
 wire sdo;
 assign GSENSOR_SDI = spi_oe_o ? sdo : 1'bZ;
@@ -165,7 +162,6 @@ pll pll_inst (
     .c1         ( spi_clk           ),
     .locked     ( pll_locked        )
 );
-
 
 
 wire rw_n, req;
