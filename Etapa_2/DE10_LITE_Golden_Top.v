@@ -134,10 +134,37 @@ end
 //=======================================================
 //  Structural coding
 //=======================================================
-wire [15:0] comp2_x;
-assign comp2_x = ~x_axis + 1;
+wire [15:0] abs_x = x_axis[15] ? (~x_axis + 1) : x_axis;
+wire sign_x = x_axis[15];
 
-assign LEDR[9:0] = comp2_x[15] ? 10'b11_1110_0000 : 10'b00_0001_1111;
+assign LEDR[9:0] = leds;
+
+reg [9:0] leds;
+always @(posedge sys_clk or negedge rst_n) begin
+    if (!rst_n) begin
+        leds <= 10'b0;
+    end else begin
+        if (abs_x < 40) begin
+            leds <= 10'b0000110000;
+        end 
+        else if (sign_x == 1'b1) begin
+            if (abs_x >= 40 && abs_x < 100)
+                leds <= 10'b0001000000;
+            else if (abs_x >= 100 && abs_x < 160)
+                leds <= 10'b0010000000;
+            else
+                leds <= 10'b0100000000;
+        end 
+        else begin
+            if (abs_x >= 40 && abs_x < 100)
+                leds <= 10'b0000001000;
+            else if (abs_x >= 100 && abs_x < 160)
+                leds <= 10'b0000000100;
+            else
+                leds <= 10'b0000000010;
+        end
+    end
+end
 
 wire [2:0] column;
 wire       row;
