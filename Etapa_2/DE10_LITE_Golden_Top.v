@@ -137,10 +137,7 @@ end
 wire [15:0] comp2_x;
 assign comp2_x = ~x_axis + 1;
 
-assign LEDR[9:0] = comp2_x[15] ? 'hFFF : 'h000;
-
-//assign LEDR[9:0] = SW[0] ? x_axis[9:0] : y_axis[9:0];
-
+assign LEDR[9:0] = comp2_x[15] ? 10'b11_1110_0000 : 10'b00_0001_1111;
 
 wire [2:0] column;
 wire       row;
