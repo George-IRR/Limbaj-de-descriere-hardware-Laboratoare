@@ -139,6 +139,9 @@ localparam COUNTER_WIDTH = 'd10;
 wire 		  video_active	   ;
 wire [9:0] pixel_x, pixel_y;
 
+wire v_sync;
+assign VGA_VS = v_sync;
+
 vga_graphics #(
 	.WIDTH(COUNTER_WIDTH)
 ) vga_graphic (
@@ -149,69 +152,31 @@ vga_graphics #(
 	.pixel_yi   ( pixel_y ),
 	.vga_r_o    ( VGA_R ),
 	.vga_g_o    ( VGA_G ),
-	.vga_b_o    ( VGA_B )
+	.vga_b_o    ( VGA_B ),
+	.data_xi		( x_axis ),
+	.data_yi		( y_axis ),
+	.vsync_i		( v_sync	)
 );
+
+
 vga_controller #(
 	.WIDTH(COUNTER_WIDTH)
 ) vga_cntrl (
 	.clk_i	 		 ( vga_clk ),
 	.rst_ni	 		 ( rst_n ),
 	.h_sync_o 		 ( VGA_HS ),
-	.v_sync_o 		 ( VGA_VS ),
+	.v_sync_o 		 ( v_sync ),
 	.video_active_o ( video_active ),
 	.pixel_x_o		 ( pixel_x ),
 	.pixel_y_o		 ( pixel_y )
 );
 
-wire [15:0] abs_x = x_axis[15] ? (~x_axis + 1) : x_axis;
-wire sign_x = x_axis[15];
-
-assign LEDR[9:0] = leds;
-
-reg [9:0] leds;
-always @(posedge sys_clk or negedge rst_n) begin
-    if (!rst_n) begin
-        leds <= 10'b0;
-    end else begin
-        if (abs_x < 40) begin
-            leds <= 10'b0000110000;
-        end 
-        else if (sign_x == 1'b1) begin
-            if (abs_x >= 40 && abs_x < 100)
-                leds <= 10'b0001000000;
-            else if (abs_x >= 100 && abs_x < 160)
-                leds <= 10'b0010000000;
-            else
-                leds <= 10'b0100000000;
-        end 
-        else begin
-            if (abs_x >= 40 && abs_x < 100)
-                leds <= 10'b0000001000;
-            else if (abs_x >= 100 && abs_x < 160)
-                leds <= 10'b0000000100;
-            else
-                leds <= 10'b0000000010;
-        end
-    end
-end
-
-
-
-//seq_counter #(
-//    .CLK_FREQ       (50000000),
-//    .UPDATE_HZ      (2)
-//) sequence_counter (
-//    .clk_i          (MAX10_CLK1_50),  
-//    .rst_ni         (KEY[0]),         
-//    .column_o       (column),
-//    .row_o          (row)
-//);
-
 wire [2:0] column;
 wire       row;
 
 adxl_level #(
-   .N(6)
+   .DISP_X(6),
+	.DISP_Y(2)
 ) level (
     .data_xi  ( x_axis ),
 	 .data_yi  ( y_axis ),
