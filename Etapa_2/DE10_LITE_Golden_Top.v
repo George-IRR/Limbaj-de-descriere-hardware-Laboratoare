@@ -98,7 +98,7 @@ module DE10_LITE_Golden_Top(
 //  REG/WIRE declarations
 //=======================================================
 wire pll_rst, rst_n;
-wire sys_clk, spi_clk;
+wire sys_clk, spi_clk, vga_clk;
 wire [7:0] rd_data;
 wire ack;
 wire pll_locked;
@@ -134,6 +134,60 @@ end
 //=======================================================
 //  Structural coding
 //=======================================================
+localparam ON    		=  1'b1	;
+localparam OFF   		=  1'b0	;
+localparam ON_N    	=  1'b0	;
+localparam OFF_N   	=  1'b1	;
+
+localparam H_CNT 		=   'd799;
+localparam V_CNT 		=   'd524;
+
+localparam X_RES		=   'd640;
+localparam Y_RES		=   'd480;
+
+localparam HS_START  = 10'd656;
+localparam HS_STOP   = 10'd751;
+localparam VS_START  = 10'd490;
+localparam VS_STOP   = 10'd491;
+
+localparam CNT_WIDTH =   'd10	;
+
+wire [CNT_WIDTH-1:0] h_cnt_o, v_cnt_o;
+wire v_cnt_en;
+
+assign v_cnt_en = h_cnt_o == H_CNT ? ON : OFF;
+
+counter #(
+	.WIDTH(CNT_WIDTH)
+) h_counter (
+	.clk_i	 ( vga_clk	),
+	.rst_ni   ( rst_n		),
+	.en_i	    ( ON    	),
+	.stop_cnt ( H_CNT   	),
+	.cnt_o	 ( h_cnt_o 	)
+);
+
+counter #(
+	.WIDTH(CNT_WIDTH)
+) v_counter (
+	.clk_i	 ( vga_clk	),
+	.rst_ni   ( rst_n		),
+	.en_i	    ( v_cnt_en ),
+	.stop_cnt ( V_CNT 	),
+	.cnt_o	 ( v_cnt_o 	)
+);
+
+assign VGA_HS = ( h_cnt_o >= HS_START && h_cnt_o <= HS_STOP ) ? ON_N : OFF_N;
+assign VGA_VS = ( v_cnt_o >= VS_START && v_cnt_o <= VS_STOP ) ? ON_N : OFF_N;
+
+wire video_active;
+assign video_active = ( h_cnt_o < X_RES && v_cnt_o < Y_RES) ? ON : OFF;
+
+assign VGA_R = ( SW[0] && video_active) ? 4'hF : 4'h0;
+assign VGA_G = ( SW[1] && video_active) ? 4'hF : 4'h0;
+assign VGA_B = ( SW[2] && video_active) ? 4'hF : 4'h0;
+
+
 wire [15:0] abs_x = x_axis[15] ? (~x_axis + 1) : x_axis;
 wire sign_x = x_axis[15];
 
@@ -191,8 +245,8 @@ adxl_level #(
 );
 
 display display_output (
-    .clk_i      ( MAX10_CLK1_50 ),
-    .rst_ni     ( KEY[0]		  ),
+    .clk_i      ( sys_clk ),
+    .rst_ni     ( rst_n		     ),
     .column_i   ( column		  ),
     .row_i      ( row   		  ),
     .HEX0       ( HEX0  		  ),
@@ -208,6 +262,7 @@ pll pll_inst (
     .inclk0     ( MAX10_CLK1_50 ),
     .c0         ( sys_clk       ),
     .c1         ( spi_clk       ),
+	 .c2			 ( vga_clk		  ),
     .locked     ( pll_locked    )
 );
 
