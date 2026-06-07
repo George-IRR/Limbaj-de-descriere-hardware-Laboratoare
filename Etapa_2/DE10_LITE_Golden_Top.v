@@ -118,8 +118,8 @@ always @(posedge sys_clk) begin
 end
 assign front_detector = ~KEY[1] & signal_delay;
 
-reg [15:0] x_axis;
-reg [15:0] y_axis;
+reg signed [15:0] x_axis;
+reg signed [15:0] y_axis;
 always @(posedge sys_clk or negedge rst_n) begin
     if (~rst_n) begin
 	 x_axis <= 0; 
