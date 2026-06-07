@@ -94,11 +94,9 @@ module DE10_LITE_Golden_Top(
 `endif
 );
 
-//=======================================================
-//  REG/WIRE declarations
-//=======================================================
 wire pll_rst, rst_n;
 wire sys_clk, spi_clk, vga_clk;
+
 wire [7:0] rd_data;
 wire ack;
 wire pll_locked;
@@ -110,16 +108,9 @@ wire spi_oe_o;
 wire sdo;
 assign GSENSOR_SDI = spi_oe_o ? sdo : 1'bZ;
 
-wire front_detector;
-reg  signal_delay;
-
-always @(posedge sys_clk) begin
-    signal_delay <= KEY[1];
-end
-assign front_detector = ~KEY[1] & signal_delay;
-
 reg signed [15:0] x_axis;
 reg signed [15:0] y_axis;
+
 always @(posedge sys_clk or negedge rst_n) begin
     if (~rst_n) begin
 	 x_axis <= 0; 
@@ -131,9 +122,6 @@ always @(posedge sys_clk or negedge rst_n) begin
 		end
 end
 
-//=======================================================
-//  Structural coding
-//=======================================================
 localparam COUNTER_WIDTH = 'd10;
 
 wire 		  video_active	   ;
