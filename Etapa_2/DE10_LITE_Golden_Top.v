@@ -139,10 +139,18 @@ localparam COUNTER_WIDTH = 'd10;
 wire 		  video_active	   ;
 wire [9:0] pixel_x, pixel_y;
 
-assign VGA_R = ( SW[0] && video_active) ? 4'hF : 4'h0;
-assign VGA_G = ( SW[1] && video_active) ? 4'hF : 4'h0;
-assign VGA_B = ( SW[2] && video_active) ? 4'hF : 4'h0;
-
+vga_graphics #(
+	.WIDTH(COUNTER_WIDTH)
+) vga_graphic (
+	.clk_i	   ( vga_clk ),
+	.rst_ni     ( rst_n ),
+	.vid_actv_i ( video_active ),
+	.pixel_xi   ( pixel_x ),
+	.pixel_yi   ( pixel_y ),
+	.vga_r_o    ( VGA_R ),
+	.vga_g_o    ( VGA_G ),
+	.vga_b_o    ( VGA_B )
+);
 vga_controller #(
 	.WIDTH(COUNTER_WIDTH)
 ) vga_cntrl (
