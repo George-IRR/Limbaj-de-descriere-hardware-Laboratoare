@@ -10,8 +10,8 @@ module vga_graphics #(
 	output reg 		  [3:0] vga_g_o   ,
 	output reg 		  [3:0] vga_b_o   ,
 	
-	input  		    [15:0] data_xi	,
-	input  		    [15:0] data_yi	,
+	input  signed 	 [15:0] data_xi	,
+	input  signed 	 [15:0] data_yi	,
 	input 					  vsync_i
 );
 
@@ -56,9 +56,9 @@ assign obj_x = obj_x_stable;
 assign obj_y = obj_y_stable;
 
 wire   obj_active;
-assign obj_active = (pixel_xi + CH_W/2 >= obj_x) && (pixel_xi < obj_x + CH_W/2) &&
-                    (pixel_yi + CH_H/2 >= obj_y) && (pixel_yi < obj_y + CH_H/2);
-
+assign obj_active = (pixel_xi + CH_W/2 >= obj_x) && (pixel_xi <= obj_x + CH_W/2) &&
+                    (pixel_yi + CH_H/2 >= obj_y) && (pixel_yi <= obj_y + CH_H/2);
+						  
 always @(*) begin
 	if (!vid_actv_i) begin
 		vga_r_o = 4'h0;
