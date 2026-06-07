@@ -23,6 +23,8 @@ localparam Y_CENTER = 240;
 localparam X_RES 	  = 640;
 localparam Y_RES 	  = 480;
 
+localparam signed [15:0] JITTER_FILTER_MASK = 16'shFFF0;
+
 wire [WIDTH-1:0] obj_x, obj_y;
 
 wire [$clog2(X_CENTER):0] column;
@@ -33,9 +35,10 @@ adxl_level #(
    .DISP_X(X_RES),
 	.DISP_Y(Y_RES)
 	
+	
 ) level (
-    .data_xi  ( data_xi ),
-	 .data_yi  ( data_yi ),
+    .data_xi  ( data_xi & JITTER_FILTER_MASK ),
+	 .data_yi  ( data_yi & JITTER_FILTER_MASK ),
     .column_o ( column ),
 	 .row_o	  ( row	  )
 );
