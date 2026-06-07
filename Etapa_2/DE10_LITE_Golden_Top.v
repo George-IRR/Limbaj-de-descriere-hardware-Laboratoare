@@ -166,8 +166,7 @@ always @(posedge sys_clk or negedge rst_n) begin
     end
 end
 
-wire [2:0] column;
-wire       row;
+
 
 //seq_counter #(
 //    .CLK_FREQ       (50000000),
@@ -179,24 +178,29 @@ wire       row;
 //    .row_o          (row)
 //);
 
+wire [2:0] column;
+wire       row;
+
 adxl_level #(
    .N(6)
 ) level (
-    .data_xi  (x_axis),
-    .column_o (column)
+    .data_xi  ( x_axis ),
+	 .data_yi  ( y_axis ),
+    .column_o ( column ),
+	 .row_o	  ( row	  )
 );
 
 display display_output (
-    .clk_i      (MAX10_CLK1_50),
-    .rst_ni     (KEY[0]),
-    .column_i   (column),
-    .row_i      (row),
-    .HEX0       (HEX0),
-    .HEX1       (HEX1),
-    .HEX2       (HEX2),
-    .HEX3       (HEX3),
-    .HEX4       (HEX4),
-    .HEX5       (HEX5)
+    .clk_i      ( MAX10_CLK1_50 ),
+    .rst_ni     ( KEY[0]		  ),
+    .column_i   ( column		  ),
+    .row_i      ( row   		  ),
+    .HEX0       ( HEX0  		  ),
+    .HEX1       ( HEX1  		  ),
+    .HEX2       ( HEX2  		  ),
+    .HEX3       ( HEX3  		  ),
+    .HEX4       ( HEX4  		  ),
+    .HEX5       ( HEX5  		  )
 );
 
 pll pll_inst (
