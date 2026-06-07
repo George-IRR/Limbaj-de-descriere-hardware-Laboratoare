@@ -94,11 +94,17 @@ module DE10_LITE_Golden_Top(
 `endif
 );
 
-//=======================================================
-//  REG/WIRE declarations
-//=======================================================
+localparam WIDTH_DISPLAY_COUNT  = 6;
+localparam HEIGHT_DISPLAY_COUNT = 2;
+
+localparam COL_WIDTH = $clog2(WIDTH_DISPLAY_COUNT);
+localparam ROW_WIDTH = $clog2(HEIGHT_DISPLAY_COUNT);
+
+localparam COUNTER_WIDTH = 'd10;
+
 wire pll_rst, rst_n;
-wire sys_clk, spi_clk;
+wire sys_clk, spi_clk, vga_clk;
+
 wire [7:0] rd_data;
 wire ack;
 wire pll_locked;
@@ -110,16 +116,9 @@ wire spi_oe_o;
 wire sdo;
 assign GSENSOR_SDI = spi_oe_o ? sdo : 1'bZ;
 
-wire front_detector;
-reg  signal_delay;
-
-always @(posedge sys_clk) begin
-    signal_delay <= KEY[1];
-end
-assign front_detector = ~KEY[1] & signal_delay;
-
 reg signed [15:0] x_axis;
 reg signed [15:0] y_axis;
+
 always @(posedge sys_clk or negedge rst_n) begin
     if (~rst_n) begin
 	 x_axis <= 0; 
@@ -131,86 +130,17 @@ always @(posedge sys_clk or negedge rst_n) begin
 		end
 end
 
-//=======================================================
-//  Structural coding
-//=======================================================
-wire [15:0] abs_x = x_axis[15] ? (~x_axis + 1) : x_axis;
-wire sign_x = x_axis[15];
+wire 		  video_active	   ;
+wire [9:0] pixel_x, pixel_y;
 
-assign LEDR[9:0] = leds;
+wire v_sync;
+assign VGA_VS = v_sync;
 
-reg [9:0] leds;
-always @(posedge sys_clk or negedge rst_n) begin
-    if (!rst_n) begin
-        leds <= 10'b0;
-    end else begin
-        if (abs_x < 40) begin
-            leds <= 10'b0000110000;
-        end 
-        else if (sign_x == 1'b1) begin
-            if (abs_x >= 40 && abs_x < 100)
-                leds <= 10'b0001000000;
-            else if (abs_x >= 100 && abs_x < 160)
-                leds <= 10'b0010000000;
-            else
-                leds <= 10'b0100000000;
-        end 
-        else begin
-            if (abs_x >= 40 && abs_x < 100)
-                leds <= 10'b0000001000;
-            else if (abs_x >= 100 && abs_x < 160)
-                leds <= 10'b0000000100;
-            else
-                leds <= 10'b0000000010;
-        end
-    end
-end
+wire [COL_WIDTH - 1:0] column;
+wire [ROW_WIDTH - 1:0] row	 ;
 
-
-
-//seq_counter #(
-//    .CLK_FREQ       (50000000),
-//    .UPDATE_HZ      (2)
-//) sequence_counter (
-//    .clk_i          (MAX10_CLK1_50),  
-//    .rst_ni         (KEY[0]),         
-//    .column_o       (column),
-//    .row_o          (row)
-//);
-
-wire [2:0] column;
-wire       row;
-
-adxl_level #(
-   .N(6)
-) level (
-    .data_xi  ( x_axis ),
-	 .data_yi  ( y_axis ),
-    .column_o ( column ),
-	 .row_o	  ( row	  )
-);
-
-display display_output (
-    .clk_i      ( MAX10_CLK1_50 ),
-    .rst_ni     ( KEY[0]		  ),
-    .column_i   ( column		  ),
-    .row_i      ( row   		  ),
-    .HEX0       ( HEX0  		  ),
-    .HEX1       ( HEX1  		  ),
-    .HEX2       ( HEX2  		  ),
-    .HEX3       ( HEX3  		  ),
-    .HEX4       ( HEX4  		  ),
-    .HEX5       ( HEX5  		  )
-);
-
-pll pll_inst (
-    .areset     ( pll_rst       ),
-    .inclk0     ( MAX10_CLK1_50 ),
-    .c0         ( sys_clk       ),
-    .c1         ( spi_clk       ),
-    .locked     ( pll_locked    )
-);
-
+wire [COL_WIDTH-1:0] column_inv;
+assign column_inv = 3'd5 - column; // inversed x axis
 
 wire rw_n;
 wire req;
@@ -219,6 +149,66 @@ wire [ 7:0] wr_data;
 wire [ 5:0] addr;
 wire [15:0] x_data;
 wire [15:0] y_data;
+
+vga_graphics #(
+	.WIDTH(COUNTER_WIDTH)
+) vga_graphic (
+	.clk_i	   ( vga_clk 		),
+	.rst_ni     ( rst_n 			),
+	.vid_actv_i ( video_active ),
+	.pixel_xi   ( pixel_x 		),
+	.pixel_yi   ( pixel_y 		),
+	.vga_r_o    ( VGA_R 			),
+	.vga_g_o    ( VGA_G 			),
+	.vga_b_o    ( VGA_B 			),
+	.data_xi		( x_axis 		),
+	.data_yi		( y_axis 		),
+	.vsync_i		( v_sync			)
+);
+
+vga_controller #(
+	.WIDTH(COUNTER_WIDTH)
+) vga_cntrl (
+	.clk_i	 		 ( vga_clk 		 ),
+	.rst_ni	 		 ( rst_n 		 ),
+	.h_sync_o 		 ( VGA_HS 		 ),
+	.v_sync_o 		 ( v_sync 		 ),
+	.video_active_o ( video_active ),
+	.pixel_x_o		 ( pixel_x 		 ),
+	.pixel_y_o		 ( pixel_y 		 )
+);
+
+adxl_level #(
+   .DISP_X(WIDTH_DISPLAY_COUNT ),
+	.DISP_Y(HEIGHT_DISPLAY_COUNT)
+) level (
+    .data_xi  ( x_axis ),
+	 .data_yi  ( y_axis ),
+    .column_o ( column ),
+	 .row_o	  ( row	  )
+);
+
+display display_output (
+    .clk_i      ( sys_clk 	  ),
+    .rst_ni     ( rst_n	  	  ),
+    .column_i   ( column_inv ),
+    .row_i      ( row     	  ),
+    .HEX0       ( HEX0    	  ),
+    .HEX1       ( HEX1    	  ),
+    .HEX2       ( HEX2    	  ),
+    .HEX3       ( HEX3    	  ),
+    .HEX4       ( HEX4    	  ),
+    .HEX5       ( HEX5    	  )
+);
+
+pll pll_inst (
+    .areset     ( pll_rst       ),
+    .inclk0     ( MAX10_CLK1_50 ),
+    .c0         ( sys_clk       ),
+    .c1         ( spi_clk       ),
+	 .c2			 ( vga_clk		  ),
+    .locked     ( pll_locked    )
+);
 
 adxl345 u_control(
     .clk			( sys_clk ),
